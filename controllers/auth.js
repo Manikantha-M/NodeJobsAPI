@@ -1,5 +1,4 @@
 const {StatusCodes} = require('http-status-codes');
-const bcrypt = require('bcryptjs');
 const UserModel = require('../models/User')
 const {BadRequestError, UnauthenticatedError} = require('../errors');
 
@@ -19,10 +18,11 @@ const login = async (req, res) => {
     if(!user){
         throw new UnauthenticatedError('Invalid Credentials');
     }
-
     // compare password
     const isPasswordCorrect = await user.comparePassword(password);
     console.log(isPasswordCorrect, 'ispasswordcorrect');
+    if(!isPasswordCorrect) throw new UnauthenticatedError('Invalid Credentials');
+   
     const token = user.createJWT();
     res.status(StatusCodes.OK).json({token, user:user.getName()})
 
